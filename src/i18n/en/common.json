@@ -1,0 +1,5 @@
+{
+  "hello": "Hello World!",
+  "helloAPITitle": "Hello API",
+  "helloAPIContent": "This is a simple API that returns a greeting message."
+}

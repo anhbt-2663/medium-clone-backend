@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: medium_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: medium_clone
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - '3306:3306'
+
+  api:
+    build: .
+    container_name: medium_api
+    depends_on:
+      - mysql_db
+    ports:
+      # Cấu hình Port: [Máy thật]:[Trong Docker]
+      # Ví dụ: bạn muốn máy thật truy cập qua 8080 nhưng code NestJS chạy 3000
+      - '3000:3000'
+    environment:
+      # Thiết lập DATABASE_URL cho Prisma bên trong Docker
+      # Lưu ý: host là "mysql_db" (tên service ở trên)
+      - DATABASE_URL=mysql://user:password@mysql_db:3306/medium_clone
+      
+      # Thiết lập Port cho NestJS
+      - PORT=3000
+      
+      # Các config khác
+      - JWT_SECRET=your_secret_key
+      - NODE_ENV=development
