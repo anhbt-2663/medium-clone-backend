@@ -14,13 +14,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    // Lấy message từ exception (có thể là string hoặc object từ ValidationPipe)
     const messages =
       typeof exceptionResponse === 'string'
         ? [exceptionResponse]
         : ((exceptionResponse as any).message ?? [exception.message]);
 
-    // Chuẩn hóa theo RealWorld spec
     response.status(status).json({
       errors: {
         body: Array.isArray(messages) ? messages : [messages],
