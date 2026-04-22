@@ -5,10 +5,9 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      {"include": "i18n/**/*", "outDir": "dist/src"},
-    { "include": "generated/prisma", "outDir": "dist/prisma" }
-
-  ],
+      { "include": "i18n/**/*", "outDir": "dist/src" },
+      { "include": "generated/prisma", "outDir": "dist/prisma" }
+    ],
     "watchAssets": true
   }
 }

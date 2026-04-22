@@ -40,7 +40,7 @@ export class AuthService {
       const tokens = await this.getToken(user.id, user.username);
       return {
         message: this.i18n.t('auth.login_success'),
-        access_token: tokens,
+        ...tokens,
       };
     } catch (error) {
       throw error;
@@ -142,9 +142,11 @@ export class AuthService {
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(payload, {
         expiresIn: '15m',
+        secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       }),
       this.jwtService.signAsync(payload, {
         expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
       }),
     ]);
 
