@@ -1,13 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class LoginDto {
-  @IsNotEmpty({ message: 'Password is required' })
-  @IsString({ message: 'Password must be a string' })
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @ApiProperty({ example: 'password123' })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.is_not_empty') })
+  @IsString({ message: i18nValidationMessage('validation.is_string') })
+  @MinLength(6, { message: i18nValidationMessage('validation.min_length') })
   password: string;
 
-  @IsNotEmpty({ message: 'Username is required' })
-  @IsString({ message: 'Username must be a string' })
-  @MinLength(6, { message: 'Username must be at least 6 characters long' })
+  @ApiProperty({ example: 'john_doe' })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.is_not_empty') })
+  @IsString({ message: i18nValidationMessage('validation.is_string') })
+  @MinLength(6, { message: i18nValidationMessage('validation.min_length') })
   username: string;
 }

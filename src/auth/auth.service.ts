@@ -1,7 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable, UnauthorizedException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { JwtService } from '@nestjs/jwt';
@@ -28,13 +29,17 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UnauthorizedException(this.i18n.t('auth.invalid_credentials'));
+        throw new UnauthorizedException(
+          this.i18n.t('auth.invalid_credentials'),
+        );
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        throw new UnauthorizedException(this.i18n.t('auth.invalid_credentials'));
+        throw new UnauthorizedException(
+          this.i18n.t('auth.invalid_credentials'),
+        );
       }
 
       const tokens = await this.getToken(user.id, user.username);
@@ -59,7 +64,9 @@ export class AuthService {
       });
 
       if (existingUser) {
-        throw new ConflictException(this.i18n.t('auth.username_or_email_taken'));
+        throw new ConflictException(
+          this.i18n.t('auth.username_or_email_taken'),
+        );
       }
 
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -74,14 +81,15 @@ export class AuthService {
 
       return { message: this.i18n.t('auth.register_success') };
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }
 
-  async logout(refreshToken: string) {
+  async logout(id: number) {
     try {
       const user = await this.prisma.user.findFirst({
-        where: { refreshToken },
+        where: { id },
       });
 
       if (!user) {
@@ -89,23 +97,22 @@ export class AuthService {
       }
 
       await this.prisma.user.updateMany({
-        where: { refreshToken: refreshToken },
+        where: { id },
         data: { refreshToken: null },
       });
       return { message: this.i18n.t('auth.logout_success') };
-    } catch (error){
+    } catch (error) {
       throw error;
     }
   }
 
-  async refreshToken(
-    id: number,
-    refreshToken: string,
-  ) {
+  async refreshToken(id: number, refreshToken: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user || user.refreshToken !== refreshToken) {
-        throw new UnauthorizedException(this.i18n.t('auth.invalid_refresh_token'));
+        throw new UnauthorizedException(
+          this.i18n.t('auth.invalid_refresh_token'),
+        );
       }
 
       const token = await this.signToken(id, user.username);
@@ -119,7 +126,7 @@ export class AuthService {
         access_token: token.access_token,
         refresh_token: token.refresh_token,
       };
-    } catch (error){
+    } catch (error) {
       throw error;
     }
   }

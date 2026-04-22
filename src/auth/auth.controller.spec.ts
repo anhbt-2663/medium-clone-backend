@@ -71,7 +71,7 @@ describe('AuthController', () => {
       const mockResponse = { message: 'Logout successful' };
       mockAuthService.logout.mockResolvedValue(mockResponse);
       const result = await authController.logout({
-        refreshToken: 'mockRefreshToken',
+        userId: 1,
       });
       expect(result).toEqual(mockResponse);
       expect(mockAuthService.logout).toHaveBeenCalledWith('mockRefreshToken');

@@ -1,32 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
+import { I18nValidationPipe } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
-    new ValidationPipe({
+    new I18nValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      exceptionFactory: (errors) => {
-        const result = errors.map((error) => ({
-          property: error.property,
-          message: error.constraints ? Object.values(error.constraints)[0] : 'Validation error',
-          errorCode: error.contexts 
-            ? Object.values(error.contexts)[0].code 
-            : `VALIDATION_${error.property.toUpperCase()}`,
-        }));
-        return new BadRequestException(result);
-      },
       stopAtFirstError: true
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalFilters(new HttpExceptionFilter(), new ValidationExceptionFilter());
   app.enableCors({
     origin: process.env.CORS_ORIGIN,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

@@ -3,10 +3,18 @@ import { AuthService } from './auth.service';
 import { ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { I18nService } from 'nestjs-i18n';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  i18nTranslate: I18nService;
+
+  constructor(
+    private readonly authService: AuthService,
+    readonly i18n: I18nService,
+  ) {
+    this.i18nTranslate = i18n;
+  }
 
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful' })
@@ -27,9 +35,9 @@ export class AuthController {
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   @Put('logout')
-  logout(@Body() body: { refreshToken: string }) {
-    const { refreshToken } = body;
-    return this.authService.logout(refreshToken);
+  logout(@Body() body: { userId: number }) {
+    const { userId } = body;
+    return this.authService.logout(userId);
   }
 
   @ApiOperation({ summary: 'Refresh authentication token' })

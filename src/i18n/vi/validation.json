@@ -1,0 +1,6 @@
+{
+  "is_not_empty": "{property} không được để trống",
+  "is_string": "{property} phải là chuỗi ký tự",
+  "min_length": "{property} phải có ít nhất {constraints.0} ký tự",
+  "is_email": "Email không hợp lệ"
+}
