@@ -1,13 +1,14 @@
 import {
-  Injectable,
+  BadRequestException,
+  ConflictException,
+  Injectable, UnauthorizedException,
 } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import { JwtService } from '@nestjs/jwt/dist/jwt.service';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { handleError } from 'src/utils/error-exception';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +28,13 @@ export class AuthService {
       });
 
       if (!user) {
-        throw {code: 401, message: this.i18n.t('auth.invalid_credentials')};
+        throw new UnauthorizedException(this.i18n.t('auth.invalid_credentials'));
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        throw {code: 401, message: this.i18n.t('auth.invalid_credentials')};
+        throw new UnauthorizedException(this.i18n.t('auth.invalid_credentials'));
       }
 
       const tokens = await this.getToken(user.id, user.username);
@@ -42,7 +43,7 @@ export class AuthService {
         access_token: tokens,
       };
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   }
 
@@ -58,7 +59,7 @@ export class AuthService {
       });
 
       if (existingUser) {
-        throw {code: 'P2002', message: this.i18n.t('auth.username_or_email_taken')};
+        throw new ConflictException(this.i18n.t('auth.username_or_email_taken'));
       }
 
       const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -73,7 +74,7 @@ export class AuthService {
 
       return { message: this.i18n.t('auth.register_success') };
     } catch (error) {
-      handleError(error);
+      throw error;
     }
   }
 
@@ -84,7 +85,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw {code: 'P2025', message: this.i18n.t('auth.invalid_credentials')};
+        throw new BadRequestException(this.i18n.t('auth.invalid_credentials'));
       }
 
       await this.prisma.user.updateMany({
@@ -93,7 +94,7 @@ export class AuthService {
       });
       return { message: this.i18n.t('auth.logout_success') };
     } catch (error){
-      handleError(error);
+      throw error;
     }
   }
 
@@ -104,7 +105,7 @@ export class AuthService {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user || user.refreshToken !== refreshToken) {
-        throw {code: 401, message: this.i18n.t('auth.invalid_refresh_token')};
+        throw new UnauthorizedException(this.i18n.t('auth.invalid_refresh_token'));
       }
 
       const token = await this.signToken(id, user.username);
@@ -119,7 +120,7 @@ export class AuthService {
         refresh_token: token.refresh_token,
       };
     } catch (error){
-      handleError(error);
+      throw error;
     }
   }
 
