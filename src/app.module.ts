@@ -9,10 +9,14 @@ import {
   QueryResolver,
   HeaderResolver,
 } from 'nestjs-i18n';
+import { AuthModule } from './auth/auth.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       loaderOptions: {
@@ -25,6 +29,8 @@ import {
         AcceptLanguageResolver,
       ],
     }),
+    PrismaModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
