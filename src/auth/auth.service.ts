@@ -43,6 +43,12 @@ export class AuthService {
       }
 
       const tokens = await this.getToken(user.id, user.username);
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken: tokens.refresh_token },
+      });
+
       return {
         message: this.i18n.t('auth.login_success'),
         ...tokens,
@@ -57,7 +63,7 @@ export class AuthService {
       const existingUser = await this.prisma.user.findFirst({
         where: {
           OR: [
-            { username: registerDto.username },
+            { username: registerDto.username.toLowerCase() },
             { email: registerDto.email },
           ],
         },
@@ -74,7 +80,7 @@ export class AuthService {
       await this.prisma.user.create({
         data: {
           email: registerDto.email,
-          username: registerDto.username,
+          username: registerDto.username.toLowerCase(),
           password: hashedPassword,
         },
       });
@@ -108,7 +114,8 @@ export class AuthService {
 
   async refreshToken(id: number, refreshToken: string) {
     try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
+      const user = await this.prisma.user.findFirst({ where: { id } });
+
       if (!user || user.refreshToken !== refreshToken) {
         throw new UnauthorizedException(
           this.i18n.t('auth.invalid_refresh_token'),
