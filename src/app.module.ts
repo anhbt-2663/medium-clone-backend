@@ -11,6 +11,8 @@ import {
 } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ProfileModule } from './profile/profile.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -30,7 +32,9 @@ import { PrismaModule } from './prisma/prisma.module';
       ],
     }),
     PrismaModule,
-    AuthModule
+    AuthModule,
+    ProfileModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

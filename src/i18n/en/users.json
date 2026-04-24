@@ -1,0 +1,5 @@
+{
+  "id_required": "ID is required",
+  "username_required": "Username is required",
+  "user_not_found": "User not found"
+}
