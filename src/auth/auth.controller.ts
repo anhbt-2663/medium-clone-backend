@@ -5,7 +5,6 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { I18nService } from 'nestjs-i18n';
 
 @Controller('auth')
 export class AuthController {
